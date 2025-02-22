@@ -4,11 +4,19 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
 Base = declarative_base()
 
+host = "api-abhaysuradkar8-a890.h.aivencloud.com"
+port = 14565
+username = "avnadmin"
+password = "AVNS_LvAKQwNqoVR1Zq_4YL1"
+database = "defaultdb"
+# schema = "public"
+
+DATABASE_URL = f"postgresql://{username}:{password}@{host}:{port}/{database}"
+
 # DATABASE_URL = os.getenv("DATABASE_URL")
-DATABASE_URL = "postgresql://avnadmin:AVNS_LvAKQwNqoVR1Zq_4YL1@api-abhaysuradkar8-a890.h.aivencloud.com:14565/defaultdb"
+# DATABASE_URL = "postgresql://avnadmin:AVNS_LvAKQwNqoVR1Zq_4YL1@api-abhaysuradkar8-a890.h.aivencloud.com:14565/defaultdb"
 
 SQLALCHEMY_DATABASE_URL = DATABASE_URL
 
