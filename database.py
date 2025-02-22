@@ -7,18 +7,27 @@ load_dotenv()
 
 Base = declarative_base()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+# DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = "postgresql://avnadmin:AVNS_LvAKQwNqoVR1Zq_4YL1@api-abhaysuradkar8-a890.h.aivencloud.com:14565/defaultdb"
 
+SQLALCHEMY_DATABASE_URL = DATABASE_URL
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
+# Create a SessionLocal class to handle database sessions
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set. Check your environment variables.")
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+# engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
-    from models.address import Address  # Import here to avoid circular import
-    from models.user import User  # Import here to avoid circular import
+    from models.address import Address
+    from models.user import User
     Base.metadata.create_all(bind=engine)
 
 def get_db():
