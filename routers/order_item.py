@@ -9,12 +9,7 @@ router = APIRouter()
 
 @router.post("/Addorder_item")
 def add_order_item(order_item: AddorderItem, db: Session = Depends(get_db)):
-    # Check if the order exists
-    order_exists = db.query(Orders).filter(Orders.order_id == order_item.order_id).first()
-    if not order_exists:
-        raise HTTPException(status_code=400, detail="Order does not exist. Create an order first.")
-
-    # Check if the order item already exists
+    
     existing_order_item = db.query(OrderItem).filter(OrderItem.order_item_id == order_item.order_item_id).first()
     if existing_order_item:
         raise HTTPException(status_code=400, detail="Order item already exists.")
@@ -25,7 +20,6 @@ def add_order_item(order_item: AddorderItem, db: Session = Depends(get_db)):
     # Create new order item
     new_order_item = OrderItem(
         order_item_id=order_item.order_item_id,
-        order_id=order_item.order_id,
         product_id= order_item.order_id,
         product_name=order_item.product_name,
         quantity=order_item.quantity,
@@ -47,7 +41,6 @@ def get_order_item(db: Session = Depends(get_db)):
     order_item_data = [
         {
             "order_item_id": ord.order_item_id,
-            "order_id": ord.order_id,
             "product_id": ord.product_id,
             "product_name": ord.product_name,
             "quantity": ord.quantity,
