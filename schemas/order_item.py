@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 class AddorderItem(BaseModel):
     order_item_id: int
-    order_id: int
     product_id: int
     product_name: str
     quantity: int
