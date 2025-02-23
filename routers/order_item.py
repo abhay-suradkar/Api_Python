@@ -20,7 +20,7 @@ def add_order_item(order_item: AddorderItem, db: Session = Depends(get_db)):
     # Create new order item
     new_order_item = OrderItem(
         order_item_id=order_item.order_item_id,
-        product_id= order_item.order_id,
+        product_id= order_item.product_id,
         product_name=order_item.product_name,
         quantity=order_item.quantity,
         price=order_item.price,
