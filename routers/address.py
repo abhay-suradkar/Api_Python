@@ -41,8 +41,13 @@ def add_address(address: AddAddress, db: Session = Depends(get_db)):
 
 
 @router.get("/getaddress")
-def get_address(db: Session = Depends(get_db)):
-    address = db.query(Address).all()
+def get_address(email: str = None, db: Session = Depends(get_db)):
+    # If email is provided, filter addresses for that user
+    if email:
+        address_query = db.query(Address).filter(Address.email == email).all()
+    else:
+        address_query = db.query(Address).all()
+
     address_data = [
         {
             "address_id": addr.address_id,
@@ -52,9 +57,10 @@ def get_address(db: Session = Depends(get_db)):
             "zip_code": addr.zip_code,
             "email": addr.email,
         } 
-        for addr in address
+        for addr in address_query
     ]
-    return {"total_address": len(address), "address": address_data}
+
+    return {"total_address": len(address_query), "address": address_data}
 
 @router.delete("/deleteaddress/{address_id}")
 def delete_address(address_id: str, db: Session = Depends(get_db)):
