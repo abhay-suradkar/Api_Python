@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
 from database import Base
 
 class User(Base):
@@ -8,3 +9,6 @@ class User(Base):
     name = Column(String(100), nullable=False)
     mobile = Column(String(15), unique=True, nullable=False)
     password = Column(String, nullable=False)
+
+    # Relationship with OrderItem
+    order_items = relationship("OrderItem", back_populates="user")
