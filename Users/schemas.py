@@ -11,6 +11,10 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: constr(min_length=6)
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
 class ResetPassword(BaseModel):
     email: EmailStr
     new_password: constr(min_length=6)

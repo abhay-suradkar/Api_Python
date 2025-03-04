@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status 
 from sqlalchemy.orm import Session
-from database import get_db
+from utils.database import get_db
 from models.order_item import OrderItem
 from schemas.order_item import AddOrderItems
-from models.user import User
+from Users.models import User
 from collections import defaultdict
 
 
@@ -35,7 +35,7 @@ def add_order_items(
     for item in order_items.items:
         if item.order_item_id != order_item_id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="All items must have the same order_item_id")
-
+            
         order_item = OrderItem(
             email=user_email,
             order_item_id=order_item_id,

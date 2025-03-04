@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
-from database import SessionLocal  
+from utils.database import SessionLocal  
 from models.orders import Orders
-from models.user import User
-from models.address import Address
+from Users.models import User
+from Address.models import Address
 from schemas.orders import CreateOrders, UpdateOrders,DeleteOrders # ✅ Schema for validation
 
 router = APIRouter()
