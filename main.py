@@ -3,6 +3,7 @@ from routers import orders, order_item
 from utils.database import init_db
 from Users.api import router as UserAPI 
 from Address.api import router as AddressAPI
+import os
 
 app = FastAPI()
  
@@ -13,6 +14,7 @@ app.include_router(AddressAPI)
 # app.include_router(orders.router, prefix="/orders", tags=["Orders"])
 # app.include_router(order_item.router, prefix="/order_item", tags=["Order_Item"])
 
+PORT = int(os.getenv("PORT", 14565)) 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=10000)
+    uvicorn.run(app, host="0.0.0.0", port=PORT, reload=True)
