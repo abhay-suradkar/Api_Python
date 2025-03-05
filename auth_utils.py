@@ -9,6 +9,7 @@ from typing import Union
 from utils.database import get_db
 from sqlalchemy.orm import Session
 from datetime import datetime,  timedelta
+from fastapi.security import OAuth2PasswordBearer
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -41,6 +42,7 @@ def create_refresh_token(data: dict, expires_delta: timedelta = timedelta(days=7
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+data = {"sub": "static_user"}
 # Create access token
 access_token = create_access_token(data)
 print("Access Token:", access_token)
