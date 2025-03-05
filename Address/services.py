@@ -9,12 +9,10 @@ import uuid
 
 class AddressService:
 
-    def add_address(address: AddAddress, db: Session = Depends(get_db), token: str = Depends(get_current_user_email)):
+    def add_address(address: AddAddress, db: Session = Depends(get_db), email: str = Depends(get_current_user_email)):
         try:
-            if not token:  # ✅ If token is None, user is not logged in
+            if not email:  # ✅ If token is None, user is not logged in
                 raise HTTPException(status_code=401, detail="User not authenticated")
-
-            email = token  # ✅ Extract the actual email
 
             new_address = Address(
                 state=address.state,

@@ -10,7 +10,7 @@ router = APIRouter()
 
 class AddressAPI:
     @router.post("/addAddress")
-    def add_address(address: AddAddress, db: Session = Depends(get_db), token: str = Depends(get_current_user_email)):        
+    def add_address(address: AddAddress, db: Session = Depends(get_db), email: str = Depends(get_current_user_email)):        
         return AddressService.add_address(address, db)
 
     @router.get("/getaddress1")

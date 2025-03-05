@@ -23,11 +23,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 #AuthenticationPythonAPI123
 SECRET_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.CrdKYwmgazyXb2ZfxMsKLxkV44Lv9D4MQLUyaynuNdI"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 5
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(hours=1))
+    expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(minutes=5))
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -40,9 +40,6 @@ def create_refresh_token(data: dict, expires_delta: timedelta = timedelta(days=7
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-# Test data
-data = {"email": "user@example.com", "name": "John Doe"}
 
 # Create access token
 access_token = create_access_token(data)
@@ -65,12 +62,8 @@ def verify_token(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def get_current_user_email(email: str = Depends(oauth2_scheme), db : Session = Depends(get_db)):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("email")
-        if email is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        return email
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+def get_current_user_email(db : Session = Depends(get_db)):
+    user= db.query(User).filter(User.is_logged_in == True).first()
+    if not user or not user.email:
+        raise HTTPException(status_code = 401, detail="User not authenticated")
+    return user.email
