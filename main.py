@@ -15,4 +15,4 @@ app.include_router(AddressAPI)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="api-abhaysuradkar8-a890.h.aivencloud.com", port=14565)
+    uvicorn.run(app, host="0.0.0.0", port=10000)
