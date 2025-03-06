@@ -11,4 +11,5 @@ class Address(Base):
     city = Column(String(100), nullable=False)
     area = Column(String(100), nullable=False)
     zip_code = Column(String(20), nullable=False)
-    email = Column(String(100), ForeignKey("users.email", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
+    email = Column(String, ForeignKey("users.email"), nullable=False)
+    user = relationship("User", back_populates="addresses")

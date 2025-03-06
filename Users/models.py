@@ -10,4 +10,5 @@ class User(Base):
     mobile = Column(String(15), unique=True, nullable=False)
     password = Column(String, nullable=False)
 
+    addresses = relationship("Address", back_populates="user", cascade="all, delete-orphan")
     order_items = relationship("OrderItem", back_populates="user")

@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from utils.database import SessionLocal, engine, get_db
-from auth_utils import get_current_user_email
 from Users.models import User
 from Address.models import Address, Base
 from Address.schemas import AddAddress, DeleteAddress
@@ -10,7 +9,7 @@ router = APIRouter()
 
 class AddressAPI:
     @router.post("/addAddress")
-    def add_address(address: AddAddress, db: Session = Depends(get_db), email: str = Depends(get_current_user_email)):
+    def add_address(address: AddAddress, db: Session = Depends(get_db)):
         return AddressService.add_address(address, db)
 
     @router.get("/getaddress1")

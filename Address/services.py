@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from utils.database import SessionLocal, engine, get_db
-from auth_utils import get_current_user_email
 from Users.models import User
 from Address.models import Address, Base
 from Address.schemas import AddAddress, DeleteAddress
@@ -9,10 +8,11 @@ import uuid
 
 class AddressService:
 
-    def add_address(address: AddAddress, db: Session = Depends(get_db), email: str = Depends(get_current_user_email)):
+    def add_address(address: AddAddress, db: Session = Depends(get_db)):
         try:
-            if not email:  # ✅ If token is None, user is not logged in
-                raise HTTPException(status_code=401, detail="User not authenticated")
+            user = db.query(User).filter(User.email == address.email).first()
+            if not user:
+                raise HTTPException(status_code=400, detail="User with this email does not exist")
 
             new_address = Address(
                 address_id=str(uuid.uuid4()),
@@ -20,7 +20,7 @@ class AddressService:
                 city=address.city,
                 area=address.area,
                 zip_code=address.zip_code,
-                email=email,  # ✅ Email from token
+                email=address.email,
             )
 
             db.add(new_address)

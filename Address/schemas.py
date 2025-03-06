@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr
 
 class AddAddress(BaseModel):
+    email: EmailStr
     state: str  
     city: str   
     area: str   

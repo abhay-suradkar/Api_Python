@@ -55,7 +55,7 @@ class UserService:
             users_data = [{"email": user.email, "name": user.name, "mobile": user.mobile} for user in users]
             return {"total_users": len(users), "users": users_data}
         except Exception as e:
-            print(e)
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 
     def reset_password(data: ResetPassword, db: Session = Depends(get_db)):
