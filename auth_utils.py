@@ -10,6 +10,7 @@ from utils.database import get_db
 from sqlalchemy.orm import Session
 from datetime import datetime,  timedelta
 from fastapi.security import OAuth2PasswordBearer
+from Users.models import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -64,8 +65,18 @@ def verify_token(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-def get_current_user_email(db : Session = Depends(get_db)):
-    user= db.query(User).filter(User.is_logged_in == True).first()
-    if not user or not user.email:
-        raise HTTPException(status_code = 401, detail="User not authenticated")
-    return user.email
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("email")
+        if email is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token",
+            )
+        return {"email": email}  # Return user email
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+        )
