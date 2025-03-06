@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
 from utils.database import SessionLocal, engine, get_db
-from auth_utils import get_current_user
+from auth_utils import get_current_user_email
 from Users.models import User
 from Address.models import Address, Base
 from Address.schemas import AddAddress, DeleteAddress
@@ -9,26 +9,28 @@ import uuid
 
 class AddressService:
 
-    def add_address(
-    address: AddAddress,
-    db: Session = Depends(get_db),
-    user: dict = Depends(get_current_user)):
+    def add_address(address: AddAddress, db: Session = Depends(get_db), email: str = Depends(get_current_user_email)):
         try:
+            if not email:  # ✅ If token is None, user is not logged in
+                raise HTTPException(status_code=401, detail="User not authenticated")
+
             new_address = Address(
-                email=user["email"],  # Auto-fetch email from token
-                street=address.street,
-                city=address.city,
+                address_id=str(uuid.uuid4()),
                 state=address.state,
-                zipcode=address.zipcode
+                city=address.city,
+                area=address.area,
+                zip_code=address.zip_code,
+                email=email,  # ✅ Email from token
             )
+
             db.add(new_address)
             db.commit()
-            return {"message": "Address added successfully"}
+            db.refresh(new_address)  
+            return {"id": str(new_address.address_id), "message": "Address registered successfully"}
+
         except Exception as e:
-            db.rollback()  # ✅ Rollback in case of failure
             raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
-    
     def get_address1(db : Session = Depends(get_db)):
         try:
             address = db.query(Address).all()
