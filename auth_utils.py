@@ -29,14 +29,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(7))
+    expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(minutes=5))
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-def create_refresh_token(data: dict, expires_delta: timedelta = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)):
+def create_refresh_token(data: dict, expires_delta: timedelta = timedelta(days = 7)):
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta  # Use 'expires_delta' instead of 'expiress_delta'
     to_encode.update({"exp": expire})
