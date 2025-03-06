@@ -26,6 +26,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 SECRET_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.CrdKYwmgazyXb2ZfxMsKLxkV44Lv9D4MQLUyaynuNdI"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 5
+REFRESH_TOKEN_EXPIRE_MINUTES = 1
 
 def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
     to_encode = data.copy()
@@ -36,7 +37,7 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-def create_refresh_token(data: dict, expires_delta: timedelta = timedelta(days=7)):
+def create_refresh_token(data: dict, expires_delta: timedelta = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)):
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta  # Use 'expires_delta' instead of 'expiress_delta'
     to_encode.update({"exp": expire})
