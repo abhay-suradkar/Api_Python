@@ -56,12 +56,17 @@ print("Refresh Token:", refresh_token)
 def verify_token(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-    
+        email: str = payload.get("email")
+
         if email is None:
-            raise HTTPException(status_code=401, detail="Invalid token: No user found")    
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token - email not found",
+            )
         return email
 
     except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+        )

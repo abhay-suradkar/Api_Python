@@ -3,10 +3,14 @@ from sqlalchemy.orm import Session
 from utils.database import SessionLocal, get_db
 from Users.models import User
 from Users.schemas import UserSignup, UserLogin, ResetPassword, DeleteUser
-from auth_utils import hash_password, verify_password, create_access_token, create_refresh_token
+from auth_utils import hash_password, verify_password, create_access_token, create_refresh_token, verify_token
+import jwt
+from jose import JWTError, jwt
 
+SECRET_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.CrdKYwmgazyXb2ZfxMsKLxkV44Lv9D4MQLUyaynuNdI"
+ALGORITHM = "HS256"
 class UserService:
-
+  
     def signup_user(user: UserSignup, db: Session = Depends(get_db)):    
         try:
             existing_user = db.query(User).filter(User.email == user.email).first()
@@ -23,7 +27,7 @@ class UserService:
             db.commit()
             return {"message": "User registered successfully"}
         except Exception as e:
-            print(e)
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
     def login(user: UserLogin, db: Session = Depends(get_db)):
         try:
@@ -47,7 +51,7 @@ class UserService:
             raise e
         except Exception as e:
             print("Unexpected Error:", str(e))  # Print error for debugging
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
     def get_users(db: Session = Depends(get_db)):
         try:
@@ -71,7 +75,7 @@ class UserService:
             db.commit()
             return {"message": "Password updated successfully"}
         except Exception as e:
-            print(e)
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
     def delete_user(email: str, db: Session = Depends(get_db)):
         try:
@@ -82,6 +86,23 @@ class UserService:
             db.commit()
             return {"message": "User deleted successfully"}
         except Exception as e:
-            print(e)
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+    def protected_route(email: str = Depends(verify_token)):
+        return {"message": f"Hello, {email}! This is a protected route."}
+
+
+    def refresh_token(refresh_token: str):
+        try:
+            payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": False})
+            print(payload)
+            email = payload.get("email")
+            if email is None:
+                raise HTTPException(status_code= 401, detail="Invalid refresh token ")
+
+            new_access_token = create_access_token(data={"sub": email})
+            return {"access_token" : new_access_token, "token_type": "bearer"}
+        except jwt.JWTError:
+            raise HTTPException(status_code = 401, detail="Internal Server Error:")
 
 

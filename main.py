@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from routers import orders, order_item
 from utils.database import init_db
 from Users.api import router as UserAPI 
 from Address.api import router as AddressAPI
+from Order_Item.api import router as OrderItemAPI
 import os
 from dotenv import load_dotenv
 
@@ -14,6 +14,7 @@ init_db()
 
 app.include_router(UserAPI)
 app.include_router(AddressAPI)
+app.include_router(OrderItemAPI)
 
 PORT = int(os.getenv("PORT", 14565))  
 

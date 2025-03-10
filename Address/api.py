@@ -7,7 +7,7 @@ from Address.schemas import AddAddress, DeleteAddress
 from Address.services import AddressService 
 router = APIRouter()
 
-class AddressAPI:
+class AddressAPI:  
     @router.post("/addAddress")
     def add_address(address: AddAddress, db: Session = Depends(get_db)):
         return AddressService.add_address(address, db)

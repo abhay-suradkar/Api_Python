@@ -5,7 +5,7 @@ from Users.models import User
 from Address.models import Address, Base
 from Address.schemas import AddAddress, DeleteAddress
 import uuid
-
+  
 class AddressService:
 
     def add_address(address: AddAddress, db: Session = Depends(get_db)):
@@ -13,7 +13,7 @@ class AddressService:
             user = db.query(User).filter(User.email == address.email).first()
             if not user:
                 raise HTTPException(status_code=400, detail="User with this email does not exist")
-
+ 
             new_address = Address(
                 address_id=str(uuid.uuid4()),
                 state=address.state,
@@ -36,7 +36,7 @@ class AddressService:
             address = db.query(Address).all()
             return address
         except Exception as e:
-            print(e)
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
     def get_address(email: str, db: Session = Depends(get_db)):
         try:
@@ -73,5 +73,5 @@ class AddressService:
             db.commit()
             return {"message": "Address Delete successfully"}
         except Exception as e:
-            print(e)
+            raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 

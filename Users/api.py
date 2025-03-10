@@ -36,18 +36,8 @@ class UserAPI:
     
     @router.get("/protected")
     def protected_route(email: str = Depends(verify_token)):
-        return {"message": f"Hello, {email}! This is a protected route."}
+        return UserService.protected_route(email)
 
     @router.post("/refresh-token")
     def refresh_token(refresh_token: str):
-        try:
-            payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": False})
-            print(payload)
-            email = payload.get("email")
-            if email is None:
-                raise HTTPException(status_code= 401, detail="Invalid refresh token ")
-
-            new_access_token = create_access_token(data={"sub": email})
-            return {"access_token" : new_access_token, "token_type": "bearer"}
-        except jwt.JWTError:
-            raise HTTPException(status_code = 401, detail="Internal Server Error:")
+        return UserService.refresh_token(refresh_token)
