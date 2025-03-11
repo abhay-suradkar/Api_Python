@@ -10,58 +10,64 @@ from fastapi import APIRouter, Body
 router = APIRouter()
 
 class OrderItemService:
-    def add_order_item(
-        order_items: AddOrderItem = Body(...),
-        db: Session = Depends(get_db)):
-            try:
-                user = db.query(User).filter(User.email == order_items.email).first()
-                if not user:
-                    raise HTTPException(status_code=404, detail="User does not exist. Please create an account first.")
+    def add_order_item(order_items: AddOrderItem = Body(...),db: Session = Depends(get_db)):
+        try:
+            user = db.query(User).filter(User.email == order_items.email).first()
+            if not user:
+                raise HTTPException(status_code=404, detail="User does not exist. Please create an account first.")
 
-                if not order_items.products:
-                    raise HTTPException(status_code=400, detail="No items provided")
+            if not order_items.products:
+                raise HTTPException(status_code=400, detail="No items provided")
 
-                order_item_id = str(uuid.uuid4())
-                order_items_to_insert = []
-                total_price = 0
+            order_item_id = str(uuid.uuid4())
 
-                for item in order_items.products:
-                    items_total = item.price * item.quantity
-                    total_price += items_total
+        # Prepare arrays to store in DB
+            product_ids = []
+            product_names = []
+            quantities = []
+            prices = []
+            total_price = 0
 
-                    new_order = OrderItem(
-                        order_item_id=order_item_id,
-                        product_id=item.product_id,
-                        product_name=item.product_name,
-                        quantity=item.quantity,
-                        price=item.price,
-                        email=user.email,
-                        total_price=items_total
-                    )
+            for item in order_items.products:
+                product_ids.append(item.product_id)
+                product_names.append(item.product_name)
+                quantities.append(item.quantity)
+                prices.append(item.price)
 
-                    order_items_to_insert.append(new_order)
+                total_price += item.price * item.quantity
 
-                db.add_all(order_items_to_insert)
-                db.commit()
+            new_order = OrderItem(
+                order_item_id=order_item_id,
+                product_id=product_ids,
+                product_name=product_names,
+                quantity=quantities,
+                price=prices,
+                email=user.email,
+                total_price=total_price
+            )
 
-                return {
-                    "order_item_id": order_item_id,
-                    "email": user.email,
-                    "products": [
-                        {
-                            "product_id": item.product_id,
-                            "product_name": item.product_name,
-                            "quantity": item.quantity,
-                            "price": item.price,
-                            "total_price": item.price * item.quantity
-                        } for item in order_items.products
-                    ],
-                    "total_price": total_price
-                }
+            db.add(new_order)
+            db.commit()
 
-            except Exception as e:
-                db.rollback()
-                raise HTTPException(status_code=500, detail=str(e))
+            return {
+                "order_item_id": order_item_id,
+                "email": user.email,
+                "products": [
+                    {
+                        "product_id": item.product_id,
+                        "product_name": item.product_name,
+                        "quantity": item.quantity,
+                        "price": item.price,
+                        "total_price": item.price * item.quantity
+                    } for item in order_items.products
+                ],
+                "total_price": total_price
+            }
+
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(status_code=500, detail=str(e))
+
 
     def get_orderItem(db: Session = Depends(get_db)):
         try:

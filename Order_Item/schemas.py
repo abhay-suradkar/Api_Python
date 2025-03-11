@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field
 from typing import List
 
 class ProductItem(BaseModel):
@@ -8,5 +8,6 @@ class ProductItem(BaseModel):
     price: float
 
 class AddOrderItem(BaseModel):
-    email: str
+    email: EmailStr
     products: List[ProductItem]
+
