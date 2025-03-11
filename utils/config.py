@@ -5,4 +5,4 @@ password = "AVNS_LvAKQwNqoVR1Zq_4YL1"
 database = "defaultdb"
 # schema = "public"
 
-DATABASE_URL = f"postgresql://{username}:{password}@{host}:{port}/{database}"
+DATABASE_URL = f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}?sslmode=require"
