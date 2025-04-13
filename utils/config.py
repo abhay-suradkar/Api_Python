@@ -7,5 +7,3 @@ database = "defaultdb"
 
 DATABASE_URL = f"postgresql+psycopg2://{username}:{password}@{host}:{port}/{database}?sslmode=require"
 
-INSTAMOJO_API_KEY = "28b768e30d328dfc0d55fb95c3cc02d7"
-INSTAMOJO_AUTH_TOKEN = "5e54b8ec9e84ae943495daeb4a9120fe"
